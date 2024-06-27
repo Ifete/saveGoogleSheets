@@ -13,7 +13,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.josefdev.savegooglesheets.R;
 import com.josefdev.savegooglesheets.adapters.PeopleAdapter;
 import com.josefdev.savegooglesheets.models.IGoogleSheets;
-import com.josefdev.savegooglesheets.models.People;
+import com.josefdev.savegooglesheets.models.Event;
 import com.josefdev.savegooglesheets.utils.Common;
 
 import org.json.JSONArray;
@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -29,7 +30,7 @@ import retrofit2.Response;
 
 public class ConsultScreen extends AppCompatActivity {
     IGoogleSheets iGoogleSheets;
-    private List<People> peopleList;
+    private List<Event> eventList;
     private RecyclerView recyclerPeople;
     ProgressDialog progressDialog;
 
@@ -44,7 +45,7 @@ public class ConsultScreen extends AppCompatActivity {
 
         fab = findViewById(R.id.fab_register);
 
-        peopleList = new ArrayList<>();
+        eventList = new ArrayList<>();
 
         iGoogleSheets = Common.iGSGetMethodClient(Common.BASE_URL);
         loadDataFromGoogleSheets();
@@ -59,30 +60,29 @@ public class ConsultScreen extends AppCompatActivity {
                 false);
 
         try {
-            pathUrl = "exec?spreadsheetId=" + Common.GOOGLE_SHEET_ID + "&sheet=" + Common.SHEET_NAME;
+            pathUrl = "exec?spreadsheetId=1RCLu_yGAZARvhVlgIKfLln3G3hGRhX4VmKJuIml1668" + Common.GOOGLE_SHEET_ID + "&sheet=datos" + Common.SHEET_NAME;
             iGoogleSheets.getPeople(pathUrl).enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                     try {
                         assert response.body() != null;
                         JSONObject responseObject = new JSONObject(response.body());
-                        JSONArray peopleArray = responseObject.getJSONArray("personas");
+                        JSONArray peopleArray = responseObject.getJSONArray("Eventos");
 
                         for (int i = 0; i < peopleArray.length(); i++) {
                             JSONObject object = peopleArray.getJSONObject(i);
                             String id = object.getString("id");
                             String name = object.getString("nombre");
-                            String surname = object.getString("apellido");
-                            String age = object.getString("edad");
+                            String fechaString = object.getString("fecha");
 
-                            People people = new People(id, name, surname, age);
-                            peopleList.add(people);
+                            Event event = new Event(id, name, fechaString);
+                            eventList.add(event);
 
-                            setPeopleAdapter(peopleList);
+                            setPeopleAdapter(eventList);
                             progressDialog.dismiss();
                         }
 
-                        int size = peopleList.size();
+                        int size = eventList.size();
                         goToRegisterScreen(size);
 
                     } catch (JSONException je) {
@@ -100,11 +100,11 @@ public class ConsultScreen extends AppCompatActivity {
         }
     }
 
-    private void setPeopleAdapter(List<People> peopleList) {
+    private void setPeopleAdapter(List<Event> eventList) {
         LinearLayoutManager manager = new LinearLayoutManager(ConsultScreen.this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
 
-        PeopleAdapter peopleAdapter = new PeopleAdapter(ConsultScreen.this, peopleList);
+        PeopleAdapter peopleAdapter = new PeopleAdapter(ConsultScreen.this, eventList);
         recyclerPeople.setLayoutManager(manager);
         recyclerPeople.setAdapter(peopleAdapter);
     }

@@ -10,17 +10,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.josefdev.savegooglesheets.R;
-import com.josefdev.savegooglesheets.models.People;
+import com.josefdev.savegooglesheets.models.Event;
 
 import java.util.List;
 
 public class PeopleAdapter extends RecyclerView.Adapter<PeopleAdapter.PeopleViewHolder> {
     Context context;
-    List<People> peopleList;
+    List<Event> eventList;
 
-    public PeopleAdapter(Context context, List<People> peopleList) {
+    public PeopleAdapter(Context context, List<Event> eventList) {
         this.context = context;
-        this.peopleList = peopleList;
+        this.eventList = eventList;
     }
 
     @NonNull
@@ -32,18 +32,18 @@ public class PeopleAdapter extends RecyclerView.Adapter<PeopleAdapter.PeopleView
 
     @Override
     public void onBindViewHolder(@NonNull PeopleViewHolder holder, int position) {
-        People pos = peopleList.get(holder.getAdapterPosition());
+        Event pos = eventList.get(holder.getAdapterPosition());
 
-        String full_name = pos.getName() + " " + pos.getSurname();
+        String full_name = pos.getName();
         holder.tId.setText(pos.getId());
         holder.tFullName.setText(full_name);
-        holder.tAge.setText(pos.getAge());
+        holder.tAge.setText(pos.getFecha());
 
     }
 
     @Override
     public int getItemCount() {
-        return peopleList.size();
+        return eventList.size();
     }
 
     public static class PeopleViewHolder extends RecyclerView.ViewHolder {
